@@ -52,7 +52,7 @@ enum class BackgroundType(
     KAABA_GOLD(
         "kaaba_gold",
         "Kaaba Golden Hour",
-        "أستار الكعبة",
+        "أستار الكعبة الغراء",
         "Muted dark gold with beautiful silk textures",
         listOf(Color(0xFF0F1412), Color(0xFF1E2824), Color(0xFF322307)),
         "geometric"
@@ -60,7 +60,7 @@ enum class BackgroundType(
     MOSQUE_STARRY(
         "mosque_starry",
         "Emerald Mosque Night",
-        "محراب الليل",
+        "محراب الليل والنجوم",
         "Starry serene night behind a majestic green minheur",
         listOf(Color(0xFF051D14), Color(0xFF0D3E2F), Color(0xFF1C5745)),
         "mihrab"
@@ -68,7 +68,7 @@ enum class BackgroundType(
     GOLDEN_ARABESQUE(
         "golden_arabesque",
         "Royal Arabesque",
-        "نقوش أندلسية",
+        "نقوش أندلسية ذهبية",
         "Complex intricate Islamic patterns etched in glowing light",
         listOf(Color(0xFF12140D), Color(0xFF232B1B), Color(0xFF3F3512)),
         "arabesque"
@@ -76,7 +76,7 @@ enum class BackgroundType(
     DESERT_SUNSET(
         "desert_sunset",
         "Spiritual Oasis",
-        "غروب الروح",
+        "غروب الروح الصحراوي",
         "Calming orange gradients reflecting desert silence",
         listOf(Color(0xFF1D0F0A), Color(0xFF3D1C0F), Color(0xFF1F2F1B)),
         "minimal"
@@ -84,11 +84,157 @@ enum class BackgroundType(
     EMERALD_AURA(
         "emerald_aura",
         "Mystic Dawn",
-        "الفجر الصادق",
+        "الفجر الصادق الزمردي",
         "Deep minimalist rich shades of deep spiritual emerald",
         listOf(Color(0xFF020E0A), Color(0xFF09291E), Color(0xFF124233)),
         "floral"
+    ),
+    SACRED_LIGHTS(
+        "sacred_lights",
+        "Sacred Floating Lights",
+        "أشعة الأنوار السابحة",
+        "Divine floating light rays over pure dark turquoise gradient",
+        listOf(Color(0xFF031416), Color(0xFF082D33), Color(0xFF1C5D66)),
+        "mihrab"
+    ),
+    MADINAH_GREEN(
+        "madinah_green",
+        "Prophet's Pure Green",
+        "الروضة الشريفة الخضراء",
+        "Serene Madinah green dome vibes with gold patterns",
+        listOf(Color(0xFF02170D), Color(0xFF063A22), Color(0xFF1E523A)),
+        "geometric"
+    ),
+    PALESTINE_CROWN(
+        "palestine_crown",
+        "Palestine Golden Dusk",
+        "بيت المقدس ومسرى الأنبياء",
+        "Golden Dome of the Rock silhouette in dusk violet blue",
+        listOf(Color(0xFF0E0B1A), Color(0xFF1F1A3A), Color(0xFF4C3015)),
+        "arabesque"
+    ),
+    AURORA_PRAYER(
+        "aurora_prayer",
+        "Aurora Spiritual Prayer",
+        "شفق مناجاة السماوي",
+        "Vibrant dynamic green/purple northern aurora skies",
+        listOf(Color(0xFF010A14), Color(0xFF05253A), Color(0xFF3E1E5E)),
+        "minimal"
+    ),
+    ROYAL_NAVY(
+        "royal_navy",
+        "Tranquil Royal Navy",
+        "زخارف البحر الساكن",
+        "Deep navy blue geometry representing ultimate peace",
+        listOf(Color(0xFF020914), Color(0xFF05172E), Color(0xFF10284D)),
+        "geometric"
+    ),
+    PEARL_DAWN(
+        "pearl_dawn",
+        "Pearl Dawn Mist",
+        "الندى واللؤلؤ الإيماني",
+        "Soft premium platinum steel and gold dawn layout",
+        listOf(Color(0xFF0A0F0D), Color(0xFF1C2220), Color(0xFF3F3821)),
+        "floral"
+    ),
+    COSMIC_MIRACLE(
+        "cosmic_miracle",
+        "Cosmic Planetary Miracle",
+        "الإعجاز الكوني العظيم",
+        "Deep nebula space textures with spinning geometric circles",
+        listOf(Color(0xFF05000C), Color(0xFF120324), Color(0xFF2C0A4B)),
+        "geometric"
+    ),
+    QURAN_PAGES(
+        "quran_pages",
+        "Glow of Mushaf Parchment",
+        "نور الصحائف والهدى",
+        "Comfortable vintage parchment glow with fine border lines",
+        listOf(Color(0xFF14120A), Color(0xFF2E2A1C), Color(0xFF261D03)),
+        "arabesque"
+    ),
+    GOLDEN_PORTAL(
+        "golden_portal",
+        "Portal of Paradise",
+        "بوابة الفردوس النورانية",
+        "Golden arches leading to high contrast ambient glow",
+        listOf(Color(0xFF110C02), Color(0xFF291B03), Color(0xFF472803)),
+        "mihrab"
+    ),
+    MINDFUL_PEACE(
+        "mindful_peace",
+        "Calming Void of Peace",
+        "سكينة النفس الصامتة",
+        "Ultra-minimalistic dark slate with breathing halo circle",
+        listOf(Color(0xFF0C0E0F), Color(0xFF181C1E), Color(0xFF232A2D)),
+        "minimal"
     )
+}
+
+data class SurahMeta(
+    val id: Int,
+    val nameArabic: String,
+    val nameEnglish: String,
+    val englishMeaning: String,
+    val versesCount: Int,
+    val classification: String
+)
+
+enum class ReciterType(val id: String, val displayName: String, val arabicName: String, val serverPrefixMap: Map<String, String>) {
+    ALAFASY(
+        "alafasy", "Mishary Alafasy", "مشاري العفاسي",
+        mapOf(
+            "mp3quran" to "https://server8.mp3quran.net/afs/",
+            "quranicaudio" to "https://download.quranicaudio.com/quran/mishari_rashid_al_afasy/",
+            "everydayquran" to "https://everydayquran.org/mp3/Alafasy/"
+        )
+    ),
+    ABDULBASIT(
+        "basit", "Abdul Basit (Mujawwad)", "عبد الباسط عبد الصمد",
+        mapOf(
+            "mp3quran" to "https://server11.mp3quran.net/basit_mtwd/",
+            "quranicaudio" to "https://download.quranicaudio.com/quran/abdul_basit_mujawwad/",
+            "everydayquran" to "https://everydayquran.org/mp3/AbdulBasit/"
+        )
+    ),
+    MAHER(
+        "maher", "Maher Al-Muaiqly", "ماهر المعيقلي",
+        mapOf(
+            "mp3quran" to "https://server12.mp3quran.net/maher/",
+            "quranicaudio" to "https://download.quranicaudio.com/quran/maher_al_muaiqly/",
+            "everydayquran" to "https://everydayquran.org/mp3/Maher%20Al%20Muaiqly/"
+        )
+    ),
+    GHAMDI(
+        "ghamdi", "Saad Al-Ghamdi", "سعد الغامدي",
+        mapOf(
+            "mp3quran" to "https://server7.mp3quran.net/s_gmd/",
+            "quranicaudio" to "https://download.quranicaudio.com/quran/sa3d_al_ghamdi/complete/",
+            "everydayquran" to "https://everydayquran.org/mp3/Saad%20Al%20Ghamdi/"
+        )
+    ),
+    SHATRI(
+        "shatri", "Abu Bakr Al-Shatri", "أبو بكر الشاطري",
+        mapOf(
+            "mp3quran" to "https://server11.mp3quran.net/shatri/",
+            "quranicaudio" to "https://download.quranicaudio.com/quran/abu_bakr_al_shatri/",
+            "everydayquran" to "https://everydayquran.org/mp3/Abu%20Bakr%20Al%20Shatri/"
+        )
+    ),
+    SHURAIM(
+        "shuraim", "Saud Al-Shuraim", "سعود الشريم",
+        mapOf(
+            "mp3quran" to "https://server7.mp3quran.net/shur/",
+            "quranicaudio" to "https://download.quranicaudio.com/quran/sa3ood_ash_shuraym/",
+            "everydayquran" to "https://everydayquran.org/mp3/Saud%20Al-Shuraim/"
+        )
+    )
+}
+
+enum class ServerType(val id: String, val displayName: String, val arabicName: String) {
+    MP3QURAN("mp3quran", "MP3Quran Realtime CDN", "سيرفر البث الرئيسي (سرعة فائقة)"),
+    QURANICAUDIO("quranicaudio", "Islamic Audio Archive", "الخادم الاحتياطي (الأرشيف الإسلامي)"),
+    EVERYDAYQURAN("everydayquran", "Global Quran Cloud", "خادم التوزيع السحابي الاحترافي")
 }
 
 enum class OrnamentStyle(val id: String, val displayName: String, val unicodeMarker: String) {
@@ -288,5 +434,122 @@ object QuranRepository {
                 )
             )
         )
+    )
+
+    val completeSurahs = listOf(
+        SurahMeta(1, "الفاتحة", "Al-Fatihah", "The Opening", 7, "Meccan"),
+        SurahMeta(2, "البقرة", "Al-Baqarah", "The Cow", 286, "Medinan"),
+        SurahMeta(3, "آل عمران", "Ali 'Imran", "Family of Imran", 200, "Medinan"),
+        SurahMeta(4, "النساء", "An-Nisa", "The Women", 176, "Medinan"),
+        SurahMeta(5, "المائدة", "Al-Ma'idah", "The Table Spread", 120, "Medinan"),
+        SurahMeta(6, "الأنعام", "Al-An'am", "The Cattle", 165, "Meccan"),
+        SurahMeta(7, "الأعراف", "Al-Ar'af", "The Heights", 206, "Meccan"),
+        SurahMeta(8, "الأنفال", "Al-Anfal", "The Spoils of War", 75, "Medinan"),
+        SurahMeta(9, "التوبة", "At-Tawbah", "The Repentance", 129, "Medinan"),
+        SurahMeta(10, "يونس", "Yunus", "Jonah", 109, "Meccan"),
+        SurahMeta(11, "هود", "Hud", "Hud", 123, "Meccan"),
+        SurahMeta(12, "يوسف", "Yusuf", "Joseph", 111, "Meccan"),
+        SurahMeta(13, "الرعد", "Ar-Ra'd", "The Thunder", 43, "Medinan"),
+        SurahMeta(14, "إبراهيم", "Ibrahim", "Abrahim", 52, "Meccan"),
+        SurahMeta(15, "الحجر", "Al-Hijr", "The Rocky Tract", 99, "Meccan"),
+        SurahMeta(16, "النحل", "An-Nahl", "The Bee", 128, "Meccan"),
+        SurahMeta(17, "الإسراء", "Al-Isra", "The Night Journey", 111, "Meccan"),
+        SurahMeta(18, "الكهف", "Al-Kahf", "The Cave", 110, "Meccan"),
+        SurahMeta(19, "مريم", "Maryam", "Mary", 98, "Meccan"),
+        SurahMeta(20, "طه", "Taha", "Ta-Ha", 135, "Meccan"),
+        SurahMeta(21, "الأنبياء", "Al-Anbiya", "The Prophets", 112, "Meccan"),
+        SurahMeta(22, "الحج", "Al-Hajj", "The Pilgrimage", 78, "Medinan"),
+        SurahMeta(23, "المؤمنون", "Al-Mu'minun", "The Believers", 118, "Meccan"),
+        SurahMeta(24, "النور", "An-Nur", "The Light", 64, "Medinan"),
+        SurahMeta(25, "الفرقان", "Al-Furqan", "The Criterion", 77, "Meccan"),
+        SurahMeta(26, "الشعراء", "Ash-Shu'ara", "The Poets", 227, "Meccan"),
+        SurahMeta(27, "النمل", "An-Naml", "The Ant", 93, "Meccan"),
+        SurahMeta(28, "القصص", "Al-Qasas", "The Stories", 88, "Meccan"),
+        SurahMeta(29, "العنكبوت", "Al-'Ankabut", "The Spider", 69, "Meccan"),
+        SurahMeta(30, "الروم", "Ar-Rum", "The Romans", 60, "Meccan"),
+        SurahMeta(31, "لقمان", "Luqman", "Luqman", 34, "Meccan"),
+        SurahMeta(32, "السجدة", "As-Sajdah", "The Prostration", 30, "Meccan"),
+        SurahMeta(33, "الأحزاب", "Al-Ahzab", "The Combined Forces", 73, "Medinan"),
+        SurahMeta(34, "سبأ", "Saba", "Sheba", 54, "Meccan"),
+        SurahMeta(35, "فاطر", "Fatir", "Originator", 45, "Meccan"),
+        SurahMeta(36, "يس", "Ya-Sin", "Ya Seen", 83, "Meccan"),
+        SurahMeta(37, "الصافات", "As-Saffat", "Those who set the Ranks", 182, "Meccan"),
+        SurahMeta(38, "ص", "Sad", "The Letter 'Saad'", 88, "Meccan"),
+        SurahMeta(39, "الزمر", "Az-Zumar", "The Troops", 75, "Meccan"),
+        SurahMeta(40, "غافر", "Ghafir", "The Forgiver", 85, "Meccan"),
+        SurahMeta(41, "فصلت", "Fussilat", "Explained in Detail", 54, "Meccan"),
+        SurahMeta(42, "الشورى", "Ash-Shura", "The Consultation", 53, "Meccan"),
+        SurahMeta(43, "الزخرف", "Az-Zukhruf", "The Ornaments of Gold", 89, "Meccan"),
+        SurahMeta(44, "الدخان", "Ad-Dukhan", "The Smoke", 59, "Meccan"),
+        SurahMeta(45, "الجاثية", "Al-Jathiyah", "The Crouching", 37, "Meccan"),
+        SurahMeta(46, "الأحقاف", "Al-Ahqaf", "The Wind-Curved Sandhills", 35, "Meccan"),
+        SurahMeta(47, "محمد", "Muhammad", "Muhammad", 38, "Medinan"),
+        SurahMeta(48, "الفتح", "Al-Fath", "The Victory", 29, "Medinan"),
+        SurahMeta(49, "الحجرات", "Al-Hujurat", "The Dwellings", 18, "Medinan"),
+        SurahMeta(50, "ق", "Qaf", "The Letter 'Qaf'", 45, "Meccan"),
+        SurahMeta(51, "الذاريات", "Adh-Dhariyat", "The Winnowing Winds", 60, "Meccan"),
+        SurahMeta(52, "الطور", "At-Tur", "The Mount", 49, "Meccan"),
+        SurahMeta(53, "النجم", "An-Najm", "The Star", 62, "Meccan"),
+        SurahMeta(54, "القمر", "Al-Qamar", "The Moon", 55, "Meccan"),
+        SurahMeta(55, "الرحمن", "Ar-Rahman", "The Beneficent", 78, "Medinan"),
+        SurahMeta(56, "الواقعة", "Al-Waqi'ah", "The Inevitable", 96, "Meccan"),
+        SurahMeta(57, "الحديد", "Al-Hadid", "The Iron", 29, "Medinan"),
+        SurahMeta(58, "المجادلة", "Al-Mujadilah", "The Pleading Woman", 22, "Medinan"),
+        SurahMeta(59, "الحشر", "Al-Hashr", "The Exile", 24, "Medinan"),
+        SurahMeta(60, "الممتحنة", "Al-Mumtahanah", "She that is to be examined", 13, "Medinan"),
+        SurahMeta(61, "الصف", "As-Saff", "The Ranks", 14, "Medinan"),
+        SurahMeta(62, "الجمعة", "Al-Jumu'ah", "The Congregation, Friday", 11, "Medinan"),
+        SurahMeta(63, "المنافقون", "Al-Munafiqun", "The Hypocrites", 11, "Medinan"),
+        SurahMeta(64, "التغابن", "At-Taghabun", "The Mutual Disillusion", 18, "Medinan"),
+        SurahMeta(65, "الطلاق", "At-Talaq", "The Divorce", 12, "Medinan"),
+        SurahMeta(66, "التحريم", "At-Tahrim", "The Prohibition", 12, "Medinan"),
+        SurahMeta(67, "الملك", "Al-Mulk", "The Sovereignty", 30, "Meccan"),
+        SurahMeta(68, "القلم", "Al-Qalam", "The Pen", 52, "Meccan"),
+        SurahMeta(69, "الحاقة", "Al-Haqqah", "The Reality", 52, "Meccan"),
+        SurahMeta(70, "المعارج", "Al-Ma'arij", "The Ascending Stairways", 44, "Meccan"),
+        SurahMeta(71, "نوح", "Nuh", "Noah", 28, "Meccan"),
+        SurahMeta(72, "الجن", "Al-Jinn", "The Jinn", 28, "Meccan"),
+        SurahMeta(73, "المزمل", "Al-Muzzammil", "The Enshrouded One", 20, "Meccan"),
+        SurahMeta(74, "المدثر", "Al-Muddaththir", "The Cloaked One", 56, "Meccan"),
+        SurahMeta(75, "القيامة", "Al-Qiyamah", "The Resurrection", 40, "Meccan"),
+        SurahMeta(76, "الإنسان", "Al-Insan", "The Man", 31, "Medinan"),
+        SurahMeta(77, "المرسلات", "Al-Mursalat", "The Emissaries", 50, "Meccan"),
+        SurahMeta(78, "النبأ", "An-Naba", "The Tidings", 40, "Meccan"),
+        SurahMeta(79, "النازعات", "An-Nazi'at", "Those who drag forth", 46, "Meccan"),
+        SurahMeta(80, "عبس", "Abasa", "He Frowned", 42, "Meccan"),
+        SurahMeta(81, "التكوير", "At-Takwir", "The Overthrowing", 29, "Meccan"),
+        SurahMeta(82, "الانفطار", "Al-Infitar", "The Cleaving", 19, "Meccan"),
+        SurahMeta(83, "المطففين", "Al-Mutaffifin", "The Defrauders", 36, "Meccan"),
+        SurahMeta(84, "الانشقاق", "Al-Inshiqaq", "The Sundering", 25, "Meccan"),
+        SurahMeta(85, "البروج", "Al-Buruj", "The Mansions of the Stars", 22, "Meccan"),
+        SurahMeta(86, "الطارق", "At-Tariq", "The Morning Star", 17, "Meccan"),
+        SurahMeta(87, "الأعلى", "Al-A'la", "The Most High", 19, "Meccan"),
+        SurahMeta(88, "الغاشية", "Al-Ghashiyah", "The Overwhelming", 26, "Meccan"),
+        SurahMeta(89, "الفجر", "Al-Fajr", "The Dawn", 30, "Meccan"),
+        SurahMeta(90, "البلد", "Al-Balad", "The City", 20, "Meccan"),
+        SurahMeta(91, "الشمس", "Ash-Shams", "The Sun", 15, "Meccan"),
+        SurahMeta(92, "الليل", "Al-Layl", "The Night", 21, "Meccan"),
+        SurahMeta(93, "الضحى", "Ad-Duha", "The Morning Hours", 11, "Meccan"),
+        SurahMeta(94, "الشرح", "Ash-Sharh", "The Consolation", 8, "Meccan"),
+        SurahMeta(95, "التين", "At-Tin", "The Fig", 8, "Meccan"),
+        SurahMeta(96, "العلق", "Al-'Alaq", "The Clot", 19, "Meccan"),
+        SurahMeta(97, "القدر", "Al-Qadr", "The Power", 5, "Meccan"),
+        SurahMeta(98, "البينة", "Al-Bayyinah", "The Clear Proof", 8, "Medinan"),
+        SurahMeta(99, "الزلزلة", "Az-Zalzalah", "The Earthquake", 8, "Medinan"),
+        SurahMeta(100, "العاديات", "Al-'Adiyat", "The Courser", 11, "Meccan"),
+        SurahMeta(101, "القارعة", "Al-Qari'ah", "The Calamity", 11, "Meccan"),
+        SurahMeta(102, "التكاثر", "At-Takathur", "The Rivalry in World Increase", 8, "Meccan"),
+        SurahMeta(103, "العصر", "Al-'Asr", "The Declining Day", 3, "Meccan"),
+        SurahMeta(104, "الهمزة", "Al-Humazah", "The Traducer", 9, "Meccan"),
+        SurahMeta(105, "الفيل", "Al-Fil", "The Elephant", 5, "Meccan"),
+        SurahMeta(106, "قريش", "Quraysh", "Quraysh", 4, "Meccan"),
+        SurahMeta(107, "الماعون", "Al-Ma'un", "The Small Kindnesses", 7, "Meccan"),
+        SurahMeta(108, "الكوثر", "Al-Kawthar", "The Abundance", 3, "Meccan"),
+        SurahMeta(109, "الكافرون", "Al-Kafirun", "The Disbelievers", 6, "Meccan"),
+        SurahMeta(110, "النصر", "An-Nasr", "The Divine Support", 3, "Medinan"),
+        SurahMeta(111, "المسد", "Al-Masad", "The Palm Fiber", 5, "Meccan"),
+        SurahMeta(112, "الإخلاص", "Al-Ikhlas", "The Sincerity", 4, "Meccan"),
+        SurahMeta(113, "الفلق", "Al-Falaq", "The Daybreak", 5, "Meccan"),
+        SurahMeta(114, "الناس", "An-Nas", "The Mankind", 6, "Meccan")
     )
 }
