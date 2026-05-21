@@ -106,7 +106,9 @@ fun QuranVideoApp() {
     val context = LocalContext.current
 
     // Navigation and state variables
-    var currentScreen by remember { mutableStateOf("home") } // "home" -> "customize" -> "export" -> "exported"
+    var currentScreen by remember { mutableStateOf("dashboard") } // "dashboard" -> "home" -> "customize" -> "export" -> "exported" (and other categories)
+    var activeCategory by remember { mutableStateOf("quran") } // "quran", "documentary", "wisdom", "facts", "learning"
+
     var selectedSurah by remember { mutableStateOf(QuranRepository.surahs[0]) }
     var currentAspectRatio by remember { mutableStateOf(AspectRatioType.PORTRAIT_9_16) }
     var selectedBackground by remember { mutableStateOf(BackgroundType.MOSQUE_STARRY) }
@@ -250,11 +252,45 @@ fun QuranVideoApp() {
                 label = "ScreenTransition"
             ) { target ->
                 when (target) {
+                    "dashboard" -> MainDashboardScreen(
+                        isArabicFirst = isArabicFirstUi,
+                        onToggleLan = { isArabicFirstUi = !isArabicFirstUi },
+                        onSelectCategory = { category ->
+                            activeCategory = category
+                            if (category == "quran") {
+                                currentScreen = "home"
+                            } else {
+                                currentScreen = "ai_generator"
+                            }
+                        }
+                    )
+
+                    "ai_generator" -> AIGeneratorScreen(
+                        category = activeCategory,
+                        isArabicFirst = isArabicFirstUi,
+                        onBack = { currentScreen = "dashboard" },
+                        onGenerate = { generatedTopic ->
+                            // Map the generated output to a dummy "selectedSurah" just to reuse the export pipeline!
+                            selectedSurah = com.example.model.Surah(
+                                id = 999,
+                                nameArabic = generatedTopic,
+                                nameEnglish = generatedTopic,
+                                englishMeaning = "",
+                                verses = listOf<com.example.model.QuranVerse>(),
+                                durationMs = 0L,
+                                audioUrl = "",
+                                backgroundSuggestIdea = ""
+                            )
+                            currentScreen = "customize"
+                        }
+                    )
+
                     "home" -> HomeScreen(
                         isArabicFirst = isArabicFirstUi,
                         onToggleLan = { isArabicFirstUi = !isArabicFirstUi },
+                        onBackToDashboard = { currentScreen = "dashboard" },
                         onSelectSurah = { surahMeta ->
-                            val preloaded = QuranRepository.surahs.find { it.id == surahMeta.id }
+                            val preloaded = com.example.model.QuranRepository.surahs.find { it.id == surahMeta.id }
                             if (preloaded != null) {
                                 selectedSurah = preloaded
                                 isCustomAudioLoaded = false
@@ -484,7 +520,11 @@ fun QuranVideoApp() {
                         onNavigateBack = {
                             try { mediaPlayer?.stop() } catch(e:Exception){}
                             isPlaying = false
-                            currentScreen = "home"
+                            if (activeCategory == "quran") {
+                                currentScreen = "home"
+                            } else {
+                                currentScreen = "ai_generator"
+                            }
                         },
                         onProceedToExport = {
                             currentScreen = "export"
@@ -545,7 +585,7 @@ fun QuranVideoApp() {
                             currentScreen = "customize"
                         },
                         onBackToHome = {
-                            currentScreen = "home"
+                            currentScreen = "dashboard"
                         }
                     )
                 }
@@ -655,6 +695,7 @@ fun QuranVideoApp() {
 fun HomeScreen(
     isArabicFirst: Boolean,
     onToggleLan: () -> Unit,
+    onBackToDashboard: () -> Unit,
     onSelectSurah: (SurahMeta) -> Unit,
     customAudioUrl: String,
     onCustomAudioUrlChange: (String) -> Unit,
@@ -686,6 +727,18 @@ fun HomeScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    // Back Button
+                    IconButton(
+                        onClick = onBackToDashboard,
+                        modifier = Modifier.size(36.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = PolishGold
+                        )
+                    }
+
                     // Logo and Title info
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -2557,9 +2610,9 @@ fun ExportedShareScreen(
 
         Text(
             text = if (isArabicFirst) {
-                "مقطع سورة $surahName جاهز للمشاركة والانتشار بنقاء $quality وبنسبة أبعاد ${aspectRatio.label}."
+                "مقطع $surahName جاهز للمشاركة والانتشار بنقاء $quality وبنسبة أبعاد ${aspectRatio.label}."
             } else {
-                "Surah $surahName video is compiled beautifully at $quality ready for viral broadcast of blessings."
+                "Video '$surahName' is compiled beautifully at $quality ready for sharing."
             },
             style = MaterialTheme.typography.bodySmall,
             color = Color.LightGray.copy(alpha = 0.8f),
@@ -2760,7 +2813,7 @@ fun ExportedShareScreen(
                             Row {
                                 IconButton(onClick = {
                                     val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
-                                    val clip = android.content.ClipData.newPlainText("Quran Video Link", cloudShareLink)
+                                    val clip = android.content.ClipData.newPlainText("Generated Video Link", cloudShareLink)
                                     clipboard.setPrimaryClip(clip)
                                     shareToastMessage = if (isArabicFirst) "تم نسخ الرابط للذاكرة! 📋" else "Link copied to clipboard! 📋"
                                 }) {
@@ -2770,7 +2823,7 @@ fun ExportedShareScreen(
                                 IconButton(onClick = {
                                     val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
                                         type = "text/plain"
-                                        putExtra(android.content.Intent.EXTRA_TEXT, "${if (isArabicFirst) "مقطع فيديو تلاوة مبارك لسورة" else "Blessed recitation clip for Surah"} $surahName : $cloudShareLink")
+                                        putExtra(android.content.Intent.EXTRA_TEXT, "${if (isArabicFirst) "مقطع فيديو:" else "Video clip:"} $surahName : $cloudShareLink")
                                     }
                                     context.startActivity(android.content.Intent.createChooser(intent, "Share Link"))
                                 }) {
@@ -2807,7 +2860,7 @@ fun ExportedShareScreen(
                     if (cloudShareLink.isNotEmpty()) {
                         val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
                             type = "text/plain"
-                            putExtra(android.content.Intent.EXTRA_TEXT, "#shorts ${if (isArabicFirst) "تلاوة خاشعة سورة" else "Beautiful recitation of Surah"} $surahName. $cloudShareLink")
+                            putExtra(android.content.Intent.EXTRA_TEXT, "#shorts ${if (isArabicFirst) "فيديو عالي الدقة:" else "HD Video clip:"} $surahName. $cloudShareLink")
                         }
                         context.startActivity(android.content.Intent.createChooser(intent, "YouTube"))
                     } else {
@@ -2824,7 +2877,7 @@ fun ExportedShareScreen(
                     if (cloudShareLink.isNotEmpty()) {
                         val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
                             type = "text/plain"
-                            putExtra(android.content.Intent.EXTRA_TEXT, "Quran Video clip $surahName. $cloudShareLink")
+                            putExtra(android.content.Intent.EXTRA_TEXT, "Video clip: $surahName. $cloudShareLink")
                         }
                         context.startActivity(android.content.Intent.createChooser(intent, "TikTok"))
                     } else {
@@ -2841,7 +2894,7 @@ fun ExportedShareScreen(
                     if (cloudShareLink.isNotEmpty()) {
                         val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
                             type = "text/plain"
-                            putExtra(android.content.Intent.EXTRA_TEXT, "Surah $surahName recitation loop. $cloudShareLink")
+                            putExtra(android.content.Intent.EXTRA_TEXT, "$surahName. $cloudShareLink")
                         }
                         context.startActivity(android.content.Intent.createChooser(intent, "Instagram"))
                     } else {
@@ -2858,7 +2911,7 @@ fun ExportedShareScreen(
                     if (cloudShareLink.isNotEmpty()) {
                         val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
                             type = "text/plain"
-                            putExtra(android.content.Intent.EXTRA_TEXT, "قراءات مباركة لسورة $surahName $cloudShareLink")
+                            putExtra(android.content.Intent.EXTRA_TEXT, "مقطع فيديو $surahName $cloudShareLink")
                         }
                         context.startActivity(android.content.Intent.createChooser(intent, "WhatsApp"))
                     } else {
