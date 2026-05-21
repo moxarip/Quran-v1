@@ -21,6 +21,244 @@ import coil.compose.AsyncImage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@Composable
+fun AILoadingScreen(
+    category: String,
+    isArabicFirst: Boolean,
+    onComplete: () -> Unit
+) {
+    val categoryItem = dashboardCategories.find { it.id == category } ?: dashboardCategories[1]
+    var progress by remember { mutableStateOf(0f) }
+    var logMsg by remember { mutableStateOf("") }
+    
+    LaunchedEffect(Unit) {
+        logMsg = if (isArabicFirst) "جاري توليد المحتوى..." else "Generating content..."
+        progress = 0.2f
+        delay(800)
+        
+        logMsg = if (isArabicFirst) "صناعة المشاهد المرئية..." else "Crafting visual scenes..."
+        progress = 0.5f
+        delay(1000)
+        
+        logMsg = if (isArabicFirst) "تجميع العناصر..." else "Assembling elements..."
+        progress = 0.8f
+        delay(800)
+        
+        progress = 1f
+        logMsg = if (isArabicFirst) "اكتمل!" else "Done!"
+        delay(300)
+        onComplete()
+    }
+
+    Column(
+        modifier = Modifier.fillMaxSize().background(PolishBodyBg).padding(24.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        CircularProgressIndicator(
+            progress = { progress },
+            color = categoryItem.color,
+            modifier = Modifier.size(80.dp),
+            strokeWidth = 6.dp
+        )
+        
+        Spacer(modifier = Modifier.height(24.dp))
+        Text(
+            text = "${(progress * 100).toInt()}%",
+            color = Color.White,
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold
+        )
+        
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = logMsg,
+            color = Color.LightGray,
+            style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
+fun AIPreviewScreen(
+    category: String,
+    topic: String,
+    isArabicFirst: Boolean,
+    onBack: () -> Unit,
+    onEdit: () -> Unit,
+    onExport: () -> Unit
+) {
+    val categoryItem = dashboardCategories.find { it.id == category } ?: dashboardCategories[1]
+    val title = if (isArabicFirst) categoryItem.titleAr else categoryItem.titleEn
+
+    var isPlaying by remember { mutableStateOf(false) }
+    var progress by remember { mutableFloatStateOf(0f) }
+
+    val imageUrl = remember {
+        val safeTopic = topic.replace(" ", ",")
+        val query = java.net.URLEncoder.encode(safeTopic, "UTF-8")
+        "https://loremflickr.com/800/1200/$query"
+    }
+
+    LaunchedEffect(isPlaying) {
+        if (isPlaying) {
+            while (progress < 1f) {
+                delay(50)
+                progress += 0.01f
+                if (progress >= 1f) {
+                    isPlaying = false
+                    progress = 1f
+                }
+            }
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black)
+            .padding(16.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth().padding(top = 16.dp, bottom = 16.dp)
+        ) {
+            IconButton(onClick = onBack) {
+                Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = if (isArabicFirst) "معاينة: $title" else "Preview: $title",
+                style = MaterialTheme.typography.titleLarge,
+                color = categoryItem.color,
+                fontWeight = FontWeight.Bold
+            )
+        }
+        
+        // Video Player UI Mock
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .clip(RoundedCornerShape(16.dp))
+                .background(Color.DarkGray)
+        ) {
+            AsyncImage(
+                model = imageUrl,
+                contentDescription = "Generated visual",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+            
+            Box(
+                modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.3f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = topic,
+                    color = Color.White,
+                    style = MaterialTheme.typography.headlineLarge,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(24.dp)
+                )
+            }
+            
+            if (!isPlaying) {
+                IconButton(
+                    onClick = {
+                        if (progress >= 1f) progress = 0f
+                        isPlaying = true
+                    },
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .size(64.dp)
+                        .background(Color.Black.copy(alpha = 0.5f), shape = androidx.compose.foundation.shape.CircleShape)
+                ) {
+                    Icon(
+                        imageVector = if (progress >= 1f) Icons.Default.Replay else Icons.Default.PlayArrow,
+                        contentDescription = "Play/Replay",
+                        tint = Color.White,
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
+            }
+            
+            // Fullscreen icon
+            IconButton(
+                onClick = { /* mock fullscreen action */ },
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(8.dp)
+            ) {
+                Icon(Icons.Default.Fullscreen, contentDescription = "Fullscreen", tint = Color.White)
+            }
+
+            // Progress Bar Bottom
+            Column(
+                modifier = Modifier.align(Alignment.BottomCenter).padding(horizontal = 16.dp, vertical = 8.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    val currentSec = (progress * 15).toInt() // Assume a 15-second simulation
+                    Text(
+                        text = "00:${currentSec.toString().padStart(2, '0')}",
+                        color = Color.White,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    Text(text = "00:15", color = Color.White, style = MaterialTheme.typography.bodySmall)
+                }
+                LinearProgressIndicator(
+                    progress = { progress },
+                    modifier = Modifier.fillMaxWidth().height(4.dp),
+                    color = categoryItem.color,
+                    trackColor = Color.White.copy(alpha = 0.3f)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+        }
+        
+        Spacer(modifier = Modifier.height(24.dp))
+        
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            OutlinedButton(
+                onClick = onEdit,
+                modifier = Modifier.weight(1f).height(56.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
+                border = BorderStroke(1.dp, Color.White.copy(alpha = 0.5f))
+            ) {
+                Icon(Icons.Default.Edit, contentDescription = null, tint = Color.White)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(if (isArabicFirst) "تعديل" else "Edit")
+            }
+            
+            Button(
+                onClick = onExport,
+                modifier = Modifier.weight(1f).height(56.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = categoryItem.color),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Icon(Icons.Default.Download, contentDescription = null, tint = Color.White)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = if (isArabicFirst) "تنزيل" else "Download",
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AICustomizeScreen(

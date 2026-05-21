@@ -104,9 +104,28 @@ fun getArabicFontFamily(fontType: ArabicFontType): FontFamily {
 fun QuranVideoApp() {
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
+    
+    var showExitDialog by remember { mutableStateOf(false) }
 
     // Navigation and state variables
     var currentScreen by remember { mutableStateOf("dashboard") } // "dashboard" -> "home" -> "customize" -> "export" -> "exported" (and other categories)
+    
+    androidx.activity.compose.BackHandler {
+        when (currentScreen) {
+            "dashboard" -> showExitDialog = true
+            "ai_generator" -> currentScreen = "dashboard"
+            "ai_loading" -> { /* Block while loading */ }
+            "ai_preview" -> currentScreen = "ai_generator"
+            "ai_customize" -> currentScreen = "ai_preview"
+            "ai_export" -> { /* Block */ }
+            "ai_share" -> currentScreen = "dashboard"
+            "home" -> currentScreen = "dashboard"
+            "customize" -> currentScreen = "home"
+            "export" -> { /* Block */ }
+            "exported" -> currentScreen = "dashboard"
+            else -> currentScreen = "dashboard"
+        }
+    }
     var activeCategory by remember { mutableStateOf("quran") } // "quran", "documentary", "wisdom", "facts", "learning"
     var aiGeneratedTopic by remember { mutableStateOf("") }
 
@@ -248,14 +267,12 @@ fun QuranVideoApp() {
             AnimatedContent(
                 targetState = currentScreen,
                 transitionSpec = {
-                    val durationIn = 350
-                    val durationOut = 280
-                    (slideInHorizontally(animationSpec = tween(durationIn, easing = FastOutSlowInEasing)) { width -> (width * 0.08f).toInt() } + 
-                     scaleIn(initialScale = 0.98f, animationSpec = tween(durationIn, easing = FastOutSlowInEasing)) + 
-                     fadeIn(animationSpec = tween(durationIn, easing = FastOutSlowInEasing))) togetherWith
-                    (slideOutHorizontally(animationSpec = tween(durationOut, easing = FastOutSlowInEasing)) { width -> -(width * 0.08f).toInt() } + 
-                     scaleOut(targetScale = 0.98f, animationSpec = tween(durationOut, easing = FastOutSlowInEasing)) + 
-                     fadeOut(animationSpec = tween(durationOut, easing = FastOutSlowInEasing)))
+                    val durationIn = 250
+                    val durationOut = 200
+                    (slideInHorizontally(animationSpec = spring(stiffness = Spring.StiffnessLow, dampingRatio = Spring.DampingRatioNoBouncy)) { width -> (width * 0.05f).toInt() } + 
+                     fadeIn(animationSpec = tween(durationIn))) togetherWith
+                    (slideOutHorizontally(animationSpec = spring(stiffness = Spring.StiffnessLow, dampingRatio = Spring.DampingRatioNoBouncy)) { width -> -(width * 0.05f).toInt() } + 
+                     fadeOut(animationSpec = tween(durationOut)))
                 },
                 label = "ScreenTransition"
             ) { target ->
@@ -279,8 +296,23 @@ fun QuranVideoApp() {
                         onBack = { currentScreen = "dashboard" },
                         onGenerate = { generatedTopic ->
                             aiGeneratedTopic = generatedTopic
-                            currentScreen = "ai_customize"
+                            currentScreen = "ai_loading"
                         }
+                    )
+                    
+                    "ai_loading" -> AILoadingScreen(
+                        category = activeCategory,
+                        isArabicFirst = isArabicFirstUi,
+                        onComplete = { currentScreen = "ai_preview" }
+                    )
+                    
+                    "ai_preview" -> AIPreviewScreen(
+                        category = activeCategory,
+                        topic = aiGeneratedTopic,
+                        isArabicFirst = isArabicFirstUi,
+                        onBack = { currentScreen = "ai_generator" },
+                        onEdit = { currentScreen = "ai_customize" },
+                        onExport = { currentScreen = "ai_export" }
                     )
                     
                     "ai_customize" -> AICustomizeScreen(
@@ -703,6 +735,29 @@ fun QuranVideoApp() {
                         )
                     }
                 }
+            }
+
+            if (showExitDialog) {
+                AlertDialog(
+                    onDismissRequest = { showExitDialog = false },
+                    title = { Text(if (isArabicFirstUi) "الخروج من التطبيق" else "Exit App") },
+                    text = { Text(if (isArabicFirstUi) "هل ترغب حقاً في الخروج؟" else "Do you want to exit the app?") },
+                    containerColor = PolishSurfaceBg,
+                    titleContentColor = Color.White,
+                    textContentColor = Color.White,
+                    confirmButton = {
+                        TextButton(onClick = { 
+                            (context as? android.app.Activity)?.finish()
+                        }) {
+                            Text(if (isArabicFirstUi) "نعم" else "Yes", color = Color.Red)
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showExitDialog = false }) {
+                            Text(if (isArabicFirstUi) "إلغاء" else "Cancel", color = PolishGold)
+                        }
+                    }
+                )
             }
         }
     }
