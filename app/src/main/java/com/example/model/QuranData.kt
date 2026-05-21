@@ -38,7 +38,11 @@ enum class AspectRatioType(val ratio: Float, val label: String, val desc: String
 enum class ArabicFontType(val fontName: String, val displayName: String, val description: String) {
     UTHMANI("Uthmani", "مصحف عثماني", "Traditional Mushaf style scripture"),
     AMIRI("Amiri", "الخط الأميري", "Elegant classic Naskh calligraphy"),
-    KUFIC("Kufic", "الخط الكوفي", "Modern geometric rounded script")
+    KUFIC("Kufic", "الخط الكوفي", "Modern geometric rounded script"),
+    CAIRO("Cairo", "خط القاهرة الحديث", "Modern geometric Sans-serif style"),
+    REEM_KUFI("ReemKufi", "خط ريم الكوفي", "Decorative heavy block calligraphy"),
+    TAJAWAL("Tajawal", "خط تجول الأنيق", "Sleek and contemporary flowing lines"),
+    LATEEF("Lateef", "خط لطيف المرن", "Warm traditional flowing script")
 }
 
 enum class BackgroundType(
@@ -168,6 +172,38 @@ enum class BackgroundType(
         "Ultra-minimalistic dark slate with breathing halo circle",
         listOf(Color(0xFF0C0E0F), Color(0xFF181C1E), Color(0xFF232A2D)),
         "minimal"
+    ),
+    KAABA_NIGHT(
+        "kaaba_night",
+        "Kaaba Midnight Silver",
+        "البيت العتيق الفضي",
+        "Serene deep night Kaaba vibes with silver embroidery tones",
+        listOf(Color(0xFF020408), Color(0xFF0F1524), Color(0xFF263348)),
+        "geometric"
+    ),
+    AL_AQSA_BLUE(
+        "al_aqsa_blue",
+        "Al-Aqsa Turquoise Dawn",
+        "الأقصى مسرى الأنبياء",
+        "Prussian sky silhouette of the Al-Aqsa Dome with emerald dust",
+        listOf(Color(0xFF080217), Color(0xFF0C1935), Color(0xFF0E4554)),
+        "mihrab"
+    ),
+    NATURE_SACRED(
+        "nature_sacred",
+        "Sacred River Oasis",
+        "الروضة والينابيع العذبة",
+        "Deep calming forest greens layered with organic dawn sky hints",
+        listOf(Color(0xFF02120C), Color(0xFF082C1D), Color(0xFF244F2E)),
+        "floral"
+    ),
+    ANIMATED_HEAVEN(
+        "animated_heaven",
+        "Celestial Gates",
+        "السماوات العلى والشهب",
+        "Ethereal shimmering stars in a deep cosmic lilac dawn sky",
+        listOf(Color(0xFF0F021A), Color(0xFF220538), Color(0xFF4C085C)),
+        "arabesque"
     )
 }
 
