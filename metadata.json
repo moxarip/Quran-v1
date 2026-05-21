@@ -1,0 +1,6 @@
+{
+  "name": "Quran Video",
+  "description": "Convert Quran recitations into professional, highly customized videos for social media sharing in under a minute.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
