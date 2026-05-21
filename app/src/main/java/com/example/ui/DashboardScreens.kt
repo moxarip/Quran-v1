@@ -29,6 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 val PolishBodyBg = Color(0xFF0F172A) // Tailwind Slate 900
 val PolishSurfaceBg = Color(0xFF1E293B) // Tailwind Slate 800
@@ -174,6 +175,11 @@ fun AIGeneratorScreen(
     val categoryItem = dashboardCategories.find { it.id == category } ?: dashboardCategories[1]
     var topicInput by remember { mutableStateOf("") }
     
+    var isGenerating by remember { mutableStateOf(false) }
+    var progress by remember { mutableStateOf(0f) }
+    var progressText by remember { mutableStateOf("") }
+    val coroutineScope = rememberCoroutineScope()
+    
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -183,7 +189,7 @@ fun AIGeneratorScreen(
         Spacer(modifier = Modifier.height(12.dp))
         
         Row(verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onClick = onBack) {
+            IconButton(onClick = onBack, enabled = !isGenerating) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
             }
             Spacer(modifier = Modifier.width(8.dp))
@@ -208,6 +214,7 @@ fun AIGeneratorScreen(
         OutlinedTextField(
             value = topicInput,
             onValueChange = { topicInput = it },
+            enabled = !isGenerating,
             placeholder = { 
                 Text(
                     text = if (isArabicFirst) "مثال: الفضاء الخارجي، النمل، الصبر..." else "e.g. Outer space, Ants, Patience...",
@@ -221,7 +228,9 @@ fun AIGeneratorScreen(
                 focusedTextColor = Color.White,
                 unfocusedTextColor = Color.White,
                 focusedContainerColor = PolishSurfaceBg,
-                unfocusedContainerColor = PolishSurfaceBg
+                unfocusedContainerColor = PolishSurfaceBg,
+                disabledContainerColor = PolishSurfaceBg,
+                disabledTextColor = Color.Gray
             ),
             shape = RoundedCornerShape(12.dp),
             textStyle = MaterialTheme.typography.bodyLarge
@@ -251,11 +260,59 @@ fun AIGeneratorScreen(
         
         Spacer(modifier = Modifier.weight(1f))
         
+        if (isGenerating) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                LinearProgressIndicator(
+                    progress = { progress },
+                    modifier = Modifier.fillMaxWidth().height(8.dp).clip(RoundedCornerShape(4.dp)),
+                    color = categoryItem.color,
+                    trackColor = PolishSurfaceBg
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "${(progress * 100).toInt()}% - $progressText",
+                    color = Color.White,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+        }
+        
         Button(
             onClick = { 
+                if (isGenerating) return@Button
                 val topic = if (topicInput.isNotBlank()) topicInput else (if (isArabicFirst) categoryItem.titleAr else categoryItem.titleEn)
-                onGenerate(topic) 
+                isGenerating = true
+                coroutineScope.launch {
+                    progress = 0f
+                    progressText = if (isArabicFirst) "جاري تحليل الموضوع..." else "Analyzing topic..."
+                    kotlinx.coroutines.delay(1000)
+                    
+                    progress = 0.25f
+                    progressText = if (isArabicFirst) "جاري كتابة السكريبت..." else "Generating storyline..."
+                    kotlinx.coroutines.delay(1200)
+                    
+                    progress = 0.5f
+                    progressText = if (isArabicFirst) "جاري توليد الصوت والمؤثرات..." else "Generating voice & FX..."
+                    kotlinx.coroutines.delay(1500)
+                    
+                    progress = 0.75f
+                    progressText = if (isArabicFirst) "جاري مزج الصور الحركية..." else "Synthesizing visuals..."
+                    kotlinx.coroutines.delay(1500)
+                    
+                    progress = 0.95f
+                    progressText = if (isArabicFirst) "جاري الإخراج النهائي..." else "Finalizing master render..."
+                    kotlinx.coroutines.delay(800)
+                    
+                    progress = 1f
+                    isGenerating = false
+                    onGenerate(topic) 
+                }
             },
+            enabled = !isGenerating,
             colors = ButtonDefaults.buttonColors(containerColor = categoryItem.color),
             modifier = Modifier.fillMaxWidth().height(56.dp),
             shape = RoundedCornerShape(16.dp)
